@@ -35,13 +35,24 @@ contract Squad is Ownable {
     }
 
     function buyPlayer(address sellerAddress, Player newPlayer) public onlyOwner {
-        require(address(this).balance >= newPlayer.getMarketPrice(), "El equipo no tiene fondos suficientes");
+        require(
+            address(this).balance >= newPlayer.getMarketPrice(), 
+            "El equipo no tiene fondos suficientes"
+            );
         (bool sent,) = sellerAddress.call{
-            value: newPlayer.getMarketPrice()
+            value: newPlayer.getMarketPrice()        
         }("");
         require (sent, "Error en la transferencia");
         players.push(newPlayer);
         emit PlayerAquired();
+    }
+
+    function getPlayers() public view returns(Player[] memory){
+        return players;
+    }
+
+    function getSquadName() public view returns(string memory){
+        return name;
     }
 
     function getDreamTeam() public {}
