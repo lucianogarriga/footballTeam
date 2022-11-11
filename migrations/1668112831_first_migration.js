@@ -5,6 +5,6 @@ var SquadContract = artifacts.require("Squad");
 
 module.exports = function(_deployer) {
   //si el constructor del contrato "Squad" recibe parametros,
-  //tambien hay que pasarlo en esta seccion
+  //tambien hay que pasarlo en esta seccion (name)
   _deployer.deploy(SquadContract, "Real Madrid");
 };

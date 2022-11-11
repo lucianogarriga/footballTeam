@@ -5,11 +5,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Player.sol";
 
 contract Squad is Ownable {
-
     string private name;
     Player[] private players;
 
-    event FundsReceived(uint amount);
+    event FundsReceived(uint256 amount);
     event PlayerAquired();
 
     receive() external payable {
@@ -20,38 +19,42 @@ contract Squad is Ownable {
         emit FundsReceived(msg.value);
     }
 
-    constructor(
-        string memory _name
-    ) {
+    constructor(string memory _name) {
         name = _name;
     }
+
     //Funcion p/ agregar un player, toma los parametros definidos x el constructor de Player.sol
     function addNewPlayer(
-        string memory _name, 
-        string memory _position, 
-        uint _price) public onlyOwner {
+        string memory _name,
+        string memory _position,
+        uint256 _price
+    ) public onlyOwner {
         Player player = new Player(_name, _position, _price);
         players.push(player);
     }
 
-    function buyPlayer(address sellerAddress, Player newPlayer) public onlyOwner {
+    function buyPlayer(address sellerAddress, Player newPlayer)
+        public
+        onlyOwner
+    {
         require(
-            address(this).balance >= newPlayer.getMarketPrice(), 
+            address(this).balance >= newPlayer.getMarketPrice(),
             "El equipo no tiene fondos suficientes"
-            );
-        (bool sent,) = sellerAddress.call{
-            value: newPlayer.getMarketPrice()        
-        }("");
-        require (sent, "Error en la transferencia");
+        );
+        (bool sent, ) = sellerAddress.call{value: newPlayer.getMarketPrice()}(
+            ""
+        );
+
+        require(sent, "Error en la transferencia");
         players.push(newPlayer);
         emit PlayerAquired();
     }
 
-    function getPlayers() public view returns(Player[] memory){
+    function getPlayers() public view returns (Player[] memory) {
         return players;
     }
 
-    function getSquadName() public view returns(string memory){
+    function getSquadName() public view returns (string memory) {
         return name;
     }
 
