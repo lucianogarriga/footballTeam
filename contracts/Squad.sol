@@ -32,11 +32,12 @@ contract Squad is Ownable {
         Player player = new Player(_name, _position, _price);
         players.push(player);
     }
-
-    function buyPlayer(address sellerAddress, Player newPlayer)
+    //Recibimos como param 1- Address del vendedor y 2- Address del player
+    function buyPlayer(address sellerAddress, address newPlayerAddress)
         public
         onlyOwner
     {
+        Player newPlayer = Player(newPlayerAddress);
         require(
             address(this).balance >= newPlayer.getMarketPrice(),
             "El equipo no tiene fondos suficientes"
