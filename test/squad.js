@@ -14,7 +14,9 @@ contract("Squad", function (accounts) {
 
   beforeEach(async () => {
     //asignamos valor a la VAR global ya declarada
-    contract = await Squad.deployed();
+    //Debemos usar .new() xq necesitamos 1 nueva instancia x cada test 
+    // y utiliza 1 address unico para c/ test
+    contract = await Squad.new("Real Madrid");
   });
 
   context("Function: addNewPlayer", async function () {
@@ -107,27 +109,40 @@ contract("Squad", function (accounts) {
       assert(players.length, 1, "Player list should be 1");
     });
 
+
     it("should fail if the team not have enough founds", async function () {
       //Set up
       let ownerOfPlayer = bob;
       //Inicializar el player - Ver el constructor de Player.sol 
-      let newPlayer = await Player.new("Messi", "DEL", 2);
+      let playerPrice = 20000000;
+      let contractBalance = 1;
+      let newPlayer = await Player.new("Messi", "DEL", playerPrice);
+
+      await web3.eth.sendTransaction({
+        to: contract.address,
+        from: bob,
+        value: web3.utils.toWei(contractBalance.toString(), "wei")
+      });
 
       //Act
-      await contract.buyPlayer(
-        ownerOfPlayer,
-        //al ya haberse creado el newPlayer, le pasamos el address como prop 
-        newPlayer.address
+      await utils.shouldThrow(
+        contract.buyPlayer(
+          ownerOfPlayer,
+          //al ya haberse creado el newPlayer, le pasamos el address como prop 
+          newPlayer.address
+        )
       )
-      assert(true);
+
     });
+
+
     //Test para verificar que emita el evento, y que se llame de esa forma
     it("should emit event PlayerAcquired", async function () {
       //Set up
-      let ownerOfPlayer = bob; 
+      let ownerOfPlayer = bob;
       let newPlayer = await Player.new("Messi", "DEL", 2);
       let contractBalance = 1;
- 
+
       //Act
       await web3.eth.sendTransaction({
         to: contract.address,
@@ -137,7 +152,7 @@ contract("Squad", function (accounts) {
 
       //Act
       let tx = await contract.buyPlayer(
-        ownerOfPlayer,  
+        ownerOfPlayer,
         newPlayer.address
       )
 
@@ -145,19 +160,20 @@ contract("Squad", function (accounts) {
       //2do luego hay un array dentro que se llama .logs[]
       //3ro agarramos el log de la posicion index 0 y
       //4to lo guardamos en otra VAR (log)
-      let log = tx.logs[0]; 
+      let log = tx.logs[0];
 
       //Assert
       assert.equal(log.event, "PlayerAcquired");
     });
 
+
     it("should emit event PlayerAcquired with price (param)", async function () {
       //Set up
-      let ownerOfPlayer = bob; 
+      let ownerOfPlayer = bob;
       let playerPrice = 2;
       let newPlayer = await Player.new("Messi", "DEL", playerPrice);
       let contractBalance = 1;
- 
+
       //Act
       await web3.eth.sendTransaction({
         to: contract.address,
@@ -167,13 +183,13 @@ contract("Squad", function (accounts) {
 
       //Act
       let tx = await contract.buyPlayer(
-        ownerOfPlayer,  
+        ownerOfPlayer,
         newPlayer.address
       )
- 
+
       let log = tx.logs[0];
       //console.log(log);
-      
+
       //Assert
       //1ro el parametro transformarlo a un string
       //2do la VAR transformarla a un string
