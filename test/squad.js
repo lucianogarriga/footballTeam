@@ -145,10 +145,39 @@ contract("Squad", function (accounts) {
       //2do luego hay un array dentro que se llama .logs[]
       //3ro agarramos el log de la posicion index 0 y
       //4to lo guardamos en otra VAR (log)
-      let log = tx.logs[0];
-      console.log(tx);
+      let log = tx.logs[0]; 
+
       //Assert
       assert.equal(log.event, "PlayerAcquired");
+    });
+
+    it("should emit event PlayerAcquired with price (param)", async function () {
+      //Set up
+      let ownerOfPlayer = bob; 
+      let playerPrice = 2;
+      let newPlayer = await Player.new("Messi", "DEL", playerPrice);
+      let contractBalance = 1;
+ 
+      //Act
+      await web3.eth.sendTransaction({
+        to: contract.address,
+        from: bob,
+        value: web3.utils.toWei(contractBalance.toString(), "ether")
+      });
+
+      //Act
+      let tx = await contract.buyPlayer(
+        ownerOfPlayer,  
+        newPlayer.address
+      )
+ 
+      let log = tx.logs[0];
+      //console.log(log);
+      
+      //Assert
+      //1ro el parametro transformarlo a un string
+      //2do la VAR transformarla a un string
+      assert.equal(log.args.price.toString(), playerPrice.toString());
     });
   });
 

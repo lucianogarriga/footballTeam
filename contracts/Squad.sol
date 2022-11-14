@@ -9,7 +9,7 @@ contract Squad is Ownable {
     Player[] private players;
 
     event FundsReceived(uint256 amount);
-    event PlayerAcquired();
+    event PlayerAcquired(uint256 price);
 
     receive() external payable {
         emit FundsReceived(msg.value);
@@ -48,7 +48,7 @@ contract Squad is Ownable {
 
         require(sent, "Error en la transferencia");
         players.push(newPlayer);
-        emit PlayerAcquired();
+        emit PlayerAcquired(newPlayer.getMarketPrice());
     }
 
     function getPlayers() public view returns (Player[] memory) {
