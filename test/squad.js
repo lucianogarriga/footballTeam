@@ -122,7 +122,7 @@ contract("Squad", function (accounts) {
       assert(true);
     });
     //Test para verificar que emita el evento, y que se llame de esa forma
-    it("should emit event PlayerAquired", async function () {
+    it("should emit event PlayerAcquired", async function () {
       //Set up
       let ownerOfPlayer = bob; 
       let newPlayer = await Player.new("Messi", "DEL", 2);
@@ -148,7 +148,7 @@ contract("Squad", function (accounts) {
       let log = tx.logs[0];
       console.log(tx);
       //Assert
-      assert.equal(log.event, "PlayerAquired");
+      assert.equal(log.event, "PlayerAcquired");
     });
   });
 
