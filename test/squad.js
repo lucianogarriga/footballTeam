@@ -121,6 +121,35 @@ contract("Squad", function (accounts) {
       )
       assert(true);
     });
+    //Test para verificar que emita el evento, y que se llame de esa forma
+    it("should emit event PlayerAquired", async function () {
+      //Set up
+      let ownerOfPlayer = bob; 
+      let newPlayer = await Player.new("Messi", "DEL", 2);
+      let contractBalance = 1;
+ 
+      //Act
+      await web3.eth.sendTransaction({
+        to: contract.address,
+        from: bob,
+        value: web3.utils.toWei(contractBalance.toString(), "ether")
+      });
+
+      //Act
+      let tx = await contract.buyPlayer(
+        ownerOfPlayer,  
+        newPlayer.address
+      )
+
+      //Testear el evento : 1ro crear una VAR (tx)
+      //2do luego hay un array dentro que se llama .logs[]
+      //3ro agarramos el log de la posicion index 0 y
+      //4to lo guardamos en otra VAR (log)
+      let log = tx.logs[0];
+      console.log(tx);
+      //Assert
+      assert.equal(log.event, "PlayerAquired");
+    });
   });
 
 });
