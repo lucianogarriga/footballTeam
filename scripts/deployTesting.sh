@@ -4,7 +4,7 @@
 set -e
 
 #creamos una variable que tiene el nombre de nuestra network
-NETWORK_NAME = "testing";
+NETWORK_NAME="testing"
 
 #Agregamos logs para verlos por consola
 echo "--------------COMPILE-------------------"

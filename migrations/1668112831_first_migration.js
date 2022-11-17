@@ -3,8 +3,8 @@
 //luego declaramos el contrato que queremos hacer el deploy
 var SquadContract = artifacts.require("Squad");
 
-module.exports = function(_deployer) {
+module.exports = function(deployer) {
   //si el constructor del contrato "Squad" recibe parametros,
   //tambien hay que pasarlo en esta seccion (name)
-  _deployer.deploy(SquadContract, "Real Madrid");
+  deployer.deploy(SquadContract, "Real Madrid");
 };
