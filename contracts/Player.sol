@@ -20,6 +20,16 @@ contract Player {
         price = _price;
     }
 
+    //Funcion getter del price, que se encuentra en una VAR global PRIVATE;
+    function getMarketPrice() public view returns (uint256) {
+        return price;
+    }
+
+    //Funcion getter del nombre del jugador
+    function getName() public view returns (string memory) {
+        return name;
+    }
+
     //Se agrega un nuevo Rate al ratings[] y se emite un evento para ver el newRate agregado
     function addNewRate(uint256 newRate) public {
         ratings.push(newRate);
@@ -45,10 +55,5 @@ contract Player {
         }
         averageRating = amount / ratings.length;
         //este resultado al guardarse en una VAR global, no necesitamos retornar nada
-    }
-
-    //Funcion getter del price, que se encuentra en una VAR global PRIVATE;
-    function getMarketPrice() public view returns (uint256) {
-        return price;
     }
 }
