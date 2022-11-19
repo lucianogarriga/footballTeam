@@ -10,7 +10,9 @@ contract Squad is Ownable {
 
     event FundsReceived(uint256 amount);
     event PlayerAcquired(string playerName);
-    event PlayerSold(string name);
+    event PlayerSold(string playerName);
+    event PlayerAdded(string playerName);
+    event SquadName(string name);
 
     modifier notOwner() {
         require(
@@ -32,19 +34,25 @@ contract Squad is Ownable {
         name = clubName;
     }
 
-    //Funcion p/ agregar un player, toma los parametros definidos x el constructor de Player.sol
+    function getTeamName() public {
+        emit SquadName(name);
+    }
+
+    //Toma los params definidos x el constructor de Player.sol
     function addNewPlayer(
         string memory _name,
         string memory _position,
         uint256 _price
     ) public onlyOwner {
-        Player player = new Player(_name, _position, _price);
-        players.push(player);
+        Player newPlayer = new Player(_name, _position, _price);
+        players.push(newPlayer);
+        emit PlayerAdded(_name);
     }
 
     //Recibimos como param 1- Address del vendedor y 2- Address del player
     function buyPlayer(address sellerAddress, address newPlayerAddress)
         public
+        payable
         onlyOwner
     {
         Player newPlayer = Player(newPlayerAddress);
@@ -102,7 +110,7 @@ contract Squad is Ownable {
                 dTeamCount++;
             }
         }
-    
+
         //Creo un array con i elementos
         Player[] memory dTeam = new Player[](dTeamCount);
 

@@ -43,7 +43,7 @@
 
 require('dotenv').config();
 const HDWalletProvider = require('truffle-hdwallet-provider');
-const { INFURA_API_KEY, MNEMONIC } = process.env;
+const { INFURA_URL, MNEMONIC } = process.env;
 
 module.exports = {
   /**
@@ -88,7 +88,7 @@ module.exports = {
     // Note: It's important to wrap the provider as a function to ensure truffle uses a new provider every time.
     goerli: {
       provider: () => 
-      new HDWalletProvider(MNEMONIC, INFURA_API_KEY),
+      new HDWalletProvider(MNEMONIC, INFURA_URL),
       network_id: '5',
       gas: 4465030    
     },
