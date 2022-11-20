@@ -11,9 +11,8 @@ const { abi } = JSON.parse(fs.readFileSync("./build/contracts/Squad.json"));
 //La funcion que se va a llamar cuando ejecutemos el script
 async function main() {
 
-    //1ro configurar la conexion con la red de Goerli y el Api Key
-    const network = process.env.ETHEREUM_NETWORK;
-    const apiKey = process.env.INFURA_API_KEY;
+    //1ro configurar la conexion con la red de Goerli  
+    const network = process.env.ETHEREUM_NETWORK; 
 
     //Se debe instanciar la libreria de Web3
     const web3 = new Web3(
@@ -27,7 +26,46 @@ async function main() {
     //Utilizamos la libreria web3, y c/ nuestra key genera un objeto tipo account
     const signer = web3.eth.accounts.privateKeyToAccount(process.env.ACCOUNT_PRIVATE_KEY);
 
-    //Agregamos la cuenta signer a web3
+    //Esta cuenta signer creada la agregamos a la libreria web3
     web3.eth.accounts.wallet.add(signer);
 
+    //Crear una nueva instancia del contrato para interactuar con el
+    const contract = new web3.eth.Contract(
+        abi, 
+        //Pasamos la variable de entorno donde hicimos deploy del contrato
+        process.env.SQUAD_DEPLOYED_ADDRESS
+    );
+
+    //Suscribir al evento antes de llamar la funcion que los emite
+    contract.events.SquadName().on('data', function(event){
+        console.log(`Nuevo evento - squad name ${event.returnValues.name}`);
+        //Le agregamos un catch de un error
+    }).on('error', function(error, receipt){
+        console.log(`Error: ${error}`);
+    });
+
+    //Una vez suscriptos los eventos, hay que comunicarse con el contrato x methods
+    //Debemos preparar la transaccion (tx) y llamar a los metodos del contrato
+    const tx = contract.methods.getTeamName();
+
+    //Ahora hay que enviar la tx, que la blockchain interactue con el contrato
+    //y ejecute los metodos
+    const receipt = await tx.send({
+        //1ro decir quien es el que envia la tx, el que firma,
+        from: signer.address,
+        //2do pasar el gas que estamos dispuestos a pagar
+        gas: await tx.estimateGas()
+    })
+    //Una vez realizado, pedimos el hash de la tx de etherscan
+    .once("transactionHash", (txhash) => {
+        console.log(`https://${network}.etherscan.io/tx/${txhash}`);
+    });
+    
+    //Imprimimos x consola que finalizo y el numero de bloque que valido la tx
+    console.log(`Block number: ${receipt.blockNumber}`);
+
+    //Una vez finalizada con la funcion, hacemos el require de dotenv
+    require("dotenv").config();
+    //Luego llamamos a la funcion main, que es todo lo desarrollado al comienzo
+    main();
 }
